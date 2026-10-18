@@ -1,5 +1,12 @@
 # PathGen → MedGemma + MUSK
 
+## Browser UI
+
+The [Ashby workspace](UI_GUIDE.md) wraps the latest notebook's same staged runner,
+with an image preview, stage retries, original captions, MUSK outputs and TXT/JSON downloads.
+Run `python -m streamlit run app.py` from this folder after installing
+`requirements-ui.txt`. See the guide for private Delta access and environment settings.
+
 For environment-specific packages and fixes for fairscale/PEFT/Pillow/protobuf,
 see [INSTALL.md](../INSTALL.md). Notebook dependencies belong to the actual selected
 kernel. PathGen's old dependencies belong only to its separate venv.

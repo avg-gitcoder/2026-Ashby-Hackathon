@@ -1,0 +1,3 @@
+# Install into the UI / notebook environment only. No ML model imports in the UI.
+streamlit>=1.40,<2
+Pillow>=10,<13

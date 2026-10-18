@@ -1,2 +1,6 @@
 # Local Delta runtime overlay. Do not commit environment packages.
 .venv-delta/
+__pycache__/
+.ui-test-deps/
+connect/reports/
+connect/logs/
