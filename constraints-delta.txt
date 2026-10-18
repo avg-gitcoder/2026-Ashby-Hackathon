@@ -1,0 +1,4 @@
+# Delta pytorch-conda/2.8 runtime; constraints do not install these packages.
+# Local CUDA suffixes (e.g. 2.8.0+cu128) satisfy the base-version constraint.
+torch==2.8.0
+torchvision==0.23.0

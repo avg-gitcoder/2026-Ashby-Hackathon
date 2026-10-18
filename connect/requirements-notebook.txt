@@ -1,0 +1,5 @@
+# Install into the actual notebook kernel, not just a different terminal Python.
+Pillow>=11.3,<12
+ipython>=8,<10
+ipykernel>=6.29,<7
+# VS Code handles the notebook UI; a full Jupyter server is not required.

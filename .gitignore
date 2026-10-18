@@ -1,0 +1,2 @@
+# Local Delta runtime overlay. Do not commit environment packages.
+.venv-delta/

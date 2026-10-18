@@ -1,5 +1,10 @@
 # 서버 실행 안내
 
+Delta의 현재 PyTorch 2.8 환경은 저장소 루트의 [INSTALL.md](../INSTALL.md)를 먼저 따르세요.
+아래 설치 명령은 보존된 upstream Python 3.10 / PyTorch 2.0.1 환경용입니다.
+현재 Delta 모듈 위에 `requirements.txt`를 덮어 설치하지 마세요.
+Delta 실행용 의존성은 `requirements-delta.txt`에 따로 정리했습니다.
+
 공식 MUSK 전체 소스와 `morphology_head.py`를 포함합니다.
 가중치, 학습 데이터, 학습된 형태학 출력층은 포함하지 않습니다.
 원본 프로젝트: https://github.com/lilab-stanford/MUSK

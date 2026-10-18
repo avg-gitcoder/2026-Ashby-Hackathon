@@ -1,5 +1,11 @@
 # 2026-Ashby-Hackathon
 
+## Installation
+
+Start with [INSTALL.md](INSTALL.md) for environment-specific requirements, Delta setup,
+notebook kernel dependencies, model downloads/access, and recovery from missing packages.
+PathGen must use a separate environment from MUSK/MedGemma.
+
 ## MUSK morphology classification
 
 Five independent three-class predictions (-1 / 0 / +1) from histopathology image patches.

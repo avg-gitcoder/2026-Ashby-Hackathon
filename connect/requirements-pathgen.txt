@@ -1,0 +1,10 @@
+# ISOLATED .venv-pathgen ONLY. Never combine with Delta/MedGemma requirements.
+# LLaVA's declared dependencies include torch 2.1.2, torchvision 0.16.2,
+# transformers 4.37.2, tokenizers 0.15.1, accelerate 0.21.0 and timm 0.6.13.
+numpy==1.26.4
+peft==0.7.1
+huggingface-hub==0.25.2
+bitsandbytes==0.43.1
+protobuf>=3.20.3,<5
+Pillow>=9.4,<12
+llava @ git+https://github.com/haotian-liu/LLaVA.git@c121f0432da27facab705978f83c4ada465e46fd

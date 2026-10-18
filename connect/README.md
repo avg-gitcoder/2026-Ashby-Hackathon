@@ -1,5 +1,9 @@
 # PathGen → MedGemma + MUSK
 
+For environment-specific packages and fixes for fairscale/PEFT/Pillow/protobuf,
+see [INSTALL.md](../INSTALL.md). Notebook dependencies belong to the actual selected
+kernel. PathGen's old dependencies belong only to its separate venv.
+
 ## Three-stage notebook with saved results
 
 Open `Run_Pathology_Report.ipynb` in VS Code connected to Delta over SSH. Select a
