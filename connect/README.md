@@ -1,49 +1,79 @@
 # PathGen → MedGemma + MUSK
 
-## One-cell notebook
+## Three-stage notebook with saved results
 
-Before the first run, prepare MedGemma from the module environment on the login node:
+Open `Run_Pathology_Report.ipynb` in VS Code connected to Delta over SSH. Select a
+remote Python kernel, change `IMAGE_FILENAME` in Stage 1, and run the three cells:
+
+1. **PathGen**: generate or reuse the caption.
+2. **MedGemma**: simplify the saved caption, independently of PathGen.
+3. **MUSK**: predict five labels, then display the final combined report.
+
+Each stage submits its own Slurm GPU job only when needed. If MedGemma fails,
+fix its environment/weights and retry Stage 2 only. If MUSK fails, retry Stage 3 only.
+A completed stage is saved on disk and reused when run again. After restarting the
+kernel, run the cells in order to restore the session; matching results are loaded
+from disk without rerunning their models. A recorded pending/running job is reattached,
+not submitted twice. Run one notebook session at a time.
+
+Default checkpoint: `../musk/runs/head_slurm_22984898/best.pt`. Input images are read
+from the existing TUM dataset directory. Model paths can be changed in `Settings`.
+Normal stage output is just the caption, explanation, or final report; logs remain
+under `logs/notebook-JOBID.out` and `.err`. Inference happens in Slurm, never on the
+login/notebook node. Interrupting a waiting cell requests cancellation of its job.
+
+### Reuse a caption generated before this notebook update
+
+In the first cell, optionally set:
+
+```python
+EXISTING_CAPTION = "reports/pathgen_retry1.json"
+```
+
+This imports that existing caption after checking image path, SHA-256, model path and
+conversation template. Importing is an explicit choice: the old JSON cannot prove the
+original model weights/environment version. Default `None` uses this notebook's own
+persistent cache, or runs PathGen once if no matching entry exists.
+
+### Cache behavior
+
+Results are stored under `reports/staged/`. Source image content, stage script content,
+upstream output, configured model paths and model file sizes/timestamps identify each
+stage. MUSK cache does not depend on MedGemma text; its predictions can be reused if
+only the explanation changes. The final report is regenerated from the selected outputs.
+Damaged result files are not silently reused. Large model weights use metadata rather
+than a full content hash, to avoid heavy disk reads on the login node. In-place Python
+package updates are not detected: use `force=True` after changing an environment.
+
+To regenerate intentionally, use `session.pathgen(force=True)`,
+`session.medgemma(force=True)`, or `session.musk(force=True)` in the matching cell.
+Then run subsequent cells to assemble the updated final report. After a failed job,
+a retry writes a fresh attempt directory and keeps successful prior stages.
+Deleting the `reports/staged` folder also removes the saved results. Do not do so while
+jobs are active. A `submit.lock` left by a crashed kernel requires checking its recorded
+job before clearing the lock; it prevents accidental duplicate submissions.
+
+### Prepare MedGemma once
+
+From the module environment on the login node:
 
 ```bash
 module load pytorch-conda/2.8
 unset PYTHONNOUSERSITE
-# Log in using an account with accepted MedGemma model terms if required.
+# Log in with an account that accepted the MedGemma model terms if needed.
 python -c 'from huggingface_hub import login; login()'
 python check_medgemma.py --download \
   --model-dir /projects/bfqi/jkim75/models/medgemma-4b-it
 ```
 
-This downloads the base model, not another copy of the LoRA adapter. It then checks
-dependency imports, base-model shard files, config and adapter tokenizer without GPU
-inference. The notebook automatically uses this explicit local model directory if present,
-avoiding reliance on a different environment's HF cache. Restart the notebook kernel after
-pulling updates. Both notebook submission and the integrated job now preflight MedGemma
-before running PathGen. These checks do not replace a full GPU integration test.
+This downloads the base model, not another adapter. Stage 2 checks dependencies and
+local weights before GPU submission. Missing MedGemma weights do not stop Stage 1.
+The local model folder is detected when retrying Stage 2 after downloading the weights.
+Restart the notebook kernel after pulling code updates.
 
-Open `Run_Pathology_Report.ipynb` in VS Code connected to Delta over SSH, and select a
-remote Python 3.10+ kernel. A local Windows kernel cannot submit Delta Slurm jobs.
-Edit only `IMAGE_FILENAME` and run the cell. It submits one GPU Slurm job, waits quietly,
-and displays only the final simplified explanation followed by five yes/no/unknown values.
-No GPU inference is performed in the notebook kernel itself.
-
-The existing setup must already be installed. Defaults use checkpoint
-`../musk/runs/head_slurm_22984898/best.pt`, PathGen's `.venv-pathgen`, and the known
-MedGemma module Python. The model paths can be changed through `Settings` in the cell.
-Input accepts a basename (e.g. TUM-YHTSLLSL.tif), not an arbitrary filesystem path.
-Images are read from the existing TUM directory.
-
-The cell remains busy while Slurm queues/runs the job; do not run it repeatedly to poll.
-Normal cell interruption requests cancellation of that submitted job.
-The wait limit is four hours including queue time; it requests cancellation on timeout.
-If a kernel is disconnected or killed, Slurm may continue: job IDs are recorded under
-`logs/notebook-JOBID.json` and can be checked using `squeue` / cancelled using `scancel`.
-An error displays a short diagnostic instead of treating a missing report as success.
-
-Each run stores its output in a unique `reports/notebook_...` folder. Full logs are in
-`logs/notebook-JOBID.out` and `.err`. On success the returned `result` variable also contains
-the probabilities, source caption, output directory and Slurm job ID.
-No notebook outputs or model weights are committed. Clear outputs before sharing a used
-notebook. The wrapper has been tested using simulated Slurm responses, not a live cluster.
+Local checks use simulated Slurm/model results and cover stage failure/retry, disk reuse
+after kernel restart, checkpoint changes and image identity. Live Delta GPU execution
+of the new staged wrapper has not yet been verified.
 
 One image is used for both image models:
 
