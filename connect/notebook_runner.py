@@ -15,7 +15,7 @@ def find_connect(start=None):
         for candidate in (parent, parent / "connect"):
             if (candidate / "report_delta.sbatch").is_file() and (candidate / "integrated_report.py").is_file():
                 return candidate
-    raise FileNotFoundError("VS Code에서 저장소의 connect 폴더를 열고 노트북을 실행하세요.")
+    raise FileNotFoundError("Open the repository connect folder in VS Code and run the notebook.")
 
 
 @dataclass
@@ -49,7 +49,7 @@ def _diagnostic(job, logs):
             lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
             if lines:
                 messages.append(f"{path}\n" + "\n".join(line[-1500:] for line in lines[-20:]))
-    return "\n\n".join(messages) or f"로그 폴더: {logs}"
+    return "\n\n".join(messages) or f"Log directory: {logs}"
 
 
 def run_report(filename, settings=None):
@@ -61,9 +61,9 @@ def run_report(filename, settings=None):
     settings = settings or Settings(find_connect())
     filename = filename.strip()
     if not filename or filename in {".", ".."} or "/" in filename or "\\" in filename:
-        raise ValueError("폴더 경로 없이 이미지 파일명만 입력하세요. 예: TUM-YHTSLLSL.tif")
+        raise ValueError("Enter an image filename without a directory, e.g. TUM-YHTSLLSL.tif")
     if Path(filename).suffix.lower() not in {".tif", ".tiff", ".png", ".jpg", ".jpeg"}:
-        raise ValueError("지원 이미지 형식: tif, tiff, png, jpg, jpeg")
+        raise ValueError("Supported image formats: tif, tiff, png, jpg, jpeg")
     if settings.poll_seconds <= 0 or settings.timeout_seconds <= 0:
         raise ValueError("Polling interval and timeout must be positive")
     image = (settings.image_root / filename).resolve(strict=True)
@@ -73,7 +73,7 @@ def run_report(filename, settings=None):
                 settings.connect.parent / "medgem/medgemma_simplifier_adapter/adapter_config.json"]
     for path in required:
         if not path.is_file():
-            raise FileNotFoundError(f"필요한 파일이 없습니다: {path}")
+            raise FileNotFoundError(f"Required file not found: {path}")
     digest = hashlib.sha256(image.read_bytes()).hexdigest()
     logs = settings.connect / "logs"
     logs.mkdir(exist_ok=True)
@@ -89,10 +89,10 @@ def run_report(filename, settings=None):
         "--output-dir", output]
     submitted = _command(command, settings.connect)
     if submitted.returncode:
-        raise RuntimeError("Slurm 제출 실패:\n" + submitted.stderr.strip())
+        raise RuntimeError("Slurm submission failed:\n" + submitted.stderr.strip())
     job = submitted.stdout.strip().split(";")[0]
     if not re.fullmatch(r"\d+", job):
-        raise RuntimeError(f"Slurm 작업번호를 확인할 수 없습니다: {submitted.stdout!r}")
+        raise RuntimeError(f"Could not determine the Slurm job ID: {submitted.stdout!r}")
     (logs / f"notebook-{job}.json").write_text(json.dumps({
         "job_id": job, "image": str(image), "output_dir": str(output)}, indent=2), encoding="utf-8")
     deadline = time.monotonic() + settings.timeout_seconds
@@ -102,7 +102,7 @@ def run_report(filename, settings=None):
     try:
         while True:
             if time.monotonic() >= deadline:
-                raise TimeoutError(f"대기 시간이 초과됐습니다. 작업번호: {job}")
+                raise TimeoutError(f"Wait timed out. Job ID: {job}")
             accounting = _command(["sacct", "-n", "-X", "-P", "-j", job,
                                     "--format=JobIDRaw,State,ExitCode"], settings.connect)
             state = exit_code = None
@@ -115,15 +115,15 @@ def run_report(filename, settings=None):
                         break
             if state in terminal:
                 if state != "COMPLETED" or exit_code != "0:0":
-                    raise RuntimeError(f"작업 {job}: {state} ({exit_code})\n" + _diagnostic(job, logs))
+                    raise RuntimeError(f"Job {job}: {state} ({exit_code})\n" + _diagnostic(job, logs))
                 report_file = output / "report.json"
                 if not report_file.is_file():
-                    raise RuntimeError(f"작업 {job}에 최종 결과 파일이 없습니다.\n" + _diagnostic(job, logs))
+                    raise RuntimeError(f"No final report file found for job {job}.\n" + _diagnostic(job, logs))
                 record = json.loads(report_file.read_text(encoding="utf-8"))
                 if record.get("image_sha256") != digest or Path(record["image_path"]).resolve() != image:
-                    raise RuntimeError("입력 이미지와 결과 이미지가 일치하지 않습니다.")
+                    raise RuntimeError("The report image does not match the input image.")
                 if not isinstance(record.get("report"), str) or not record["report"].strip():
-                    raise RuntimeError("최종 설명이 비어 있습니다.")
+                    raise RuntimeError("The final report is empty.")
                 record["slurm_job_id"] = job
                 record["output_dir"] = str(output)
                 return record
@@ -132,12 +132,12 @@ def run_report(filename, settings=None):
             if queue.returncode == 0 and not queue.stdout.strip() and state is None:
                 missing_since = missing_since or time.monotonic()
                 if time.monotonic() - missing_since > 120:
-                    raise RuntimeError(f"작업 {job}의 종료 상태를 확인할 수 없습니다. sacct로 확인하세요.\n" + _diagnostic(job, logs))
+                    raise RuntimeError(f"Could not determine the final status of job {job}. Check sacct.\n" + _diagnostic(job, logs))
             else:
                 missing_since = None
             time.sleep(settings.poll_seconds)
     except (KeyboardInterrupt, TimeoutError):
         cancelled = _command(["scancel", job], settings.connect)
         if cancelled.returncode:
-            raise RuntimeError(f"작업 {job} 자동 취소 실패. scancel {job}로 확인하세요.")
+            raise RuntimeError(f"Automatic cancellation failed for job {job}. Check using scancel {job}.")
         raise
