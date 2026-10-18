@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from check_medgemma import default_base_model
 
 FEATURE_NAMES = {
     "abnormal_gland_arch": "Abnormal gland architecture",
@@ -39,14 +40,17 @@ def main():
     parser.add_argument("--pathgen-python", default=sys.executable)
     parser.add_argument("--medgemma-python", default=sys.executable)
     parser.add_argument("--conv-mode", default="llava_v1")
-    parser.add_argument("--medgemma-base", default="google/medgemma-4b-it")
+    parser.add_argument("--medgemma-base", default=default_base_model())
     args = parser.parse_args()
     image = args.image.resolve(strict=True)
     checkpoint = args.musk_checkpoint.resolve(strict=True)
+    scripts = Path(__file__).resolve().parent
+    # Fail before the expensive PathGen stage if MedGemma cannot run offline.
+    subprocess.run([args.medgemma_python, str(scripts / "check_medgemma.py"),
+                    "--base-model", args.medgemma_base], check=True)
     # Fresh run directory prevents stale files from a different image being merged.
     args.output_dir.mkdir(parents=True, exist_ok=False)
     output = args.output_dir.resolve()
-    scripts = Path(__file__).resolve().parent
     digest = hashlib.sha256(image.read_bytes()).hexdigest()
 
     def run(python, script, *values):

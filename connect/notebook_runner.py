@@ -27,6 +27,7 @@ class Settings:
     pathgen_model: Path = Path("/projects/bfqi/jkim75/models/PathGen-LLaVA")
     pathgen_python: Optional[Path] = None
     medgemma_python: Path = Path("/sw/rh9.4/user/python/conda-env/pytorch-2.8-cu128/bin/python")
+    medgemma_base: Optional[str] = None
     poll_seconds: float = 10
     timeout_seconds: float = 4 * 60 * 60
 
@@ -34,6 +35,9 @@ class Settings:
         self.connect = Path(self.connect).resolve()
         self.checkpoint = Path(self.checkpoint or self.connect.parent / "musk/runs/head_slurm_22984898/best.pt")
         self.pathgen_python = Path(self.pathgen_python or self.connect / ".venv-pathgen/bin/python")
+        if self.medgemma_base is None:
+            local_model = Path("/projects/bfqi/jkim75/models/medgemma-4b-it")
+            self.medgemma_base = str(local_model) if (local_model / "config.json").is_file() else "google/medgemma-4b-it"
 
 
 def _command(args, cwd):
@@ -76,6 +80,11 @@ def run_report(filename, settings=None):
         if not path.is_file():
             raise FileNotFoundError(f"Required file not found: {path}")
     digest = hashlib.sha256(image.read_bytes()).hexdigest()
+    # CPU-only metadata/tokenizer checks before allocating a GPU or loading PathGen.
+    preflight = _command([settings.medgemma_python, settings.connect / "check_medgemma.py",
+                          "--base-model", settings.medgemma_base], settings.connect)
+    if preflight.returncode:
+        raise RuntimeError("MedGemma preflight failed before GPU submission:\n" + preflight.stderr.strip())
     logs = settings.connect / "logs"
     logs.mkdir(exist_ok=True)
     # The pipeline requires a new directory; do not create this output directory here.
@@ -87,6 +96,7 @@ def run_report(filename, settings=None):
         "--pathgen-model", settings.pathgen_model,
         "--pathgen-python", settings.pathgen_python,
         "--medgemma-python", settings.medgemma_python,
+        "--medgemma-base", settings.medgemma_base,
         "--output-dir", output]
     submitted = _command(command, settings.connect)
     if submitted.returncode:

@@ -2,6 +2,24 @@
 
 ## One-cell notebook
 
+Before the first run, prepare MedGemma from the module environment on the login node:
+
+```bash
+module load pytorch-conda/2.8
+unset PYTHONNOUSERSITE
+# Log in using an account with accepted MedGemma model terms if required.
+python -c 'from huggingface_hub import login; login()'
+python check_medgemma.py --download \
+  --model-dir /projects/bfqi/jkim75/models/medgemma-4b-it
+```
+
+This downloads the base model, not another copy of the LoRA adapter. It then checks
+dependency imports, base-model shard files, config and adapter tokenizer without GPU
+inference. The notebook automatically uses this explicit local model directory if present,
+avoiding reliance on a different environment's HF cache. Restart the notebook kernel after
+pulling updates. Both notebook submission and the integrated job now preflight MedGemma
+before running PathGen. These checks do not replace a full GPU integration test.
+
 Open `Run_Pathology_Report.ipynb` in VS Code connected to Delta over SSH, and select a
 remote Python 3.10+ kernel. A local Windows kernel cannot submit Delta Slurm jobs.
 Edit only `IMAGE_FILENAME` and run the cell. It submits one GPU Slurm job, waits quietly,
