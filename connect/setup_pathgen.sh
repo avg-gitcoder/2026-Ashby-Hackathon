@@ -16,10 +16,10 @@ PY="$ENV_DIR/bin/python"
 # No --user or --system-site-packages: leave MUSK/MedGemma environments unchanged.
 "$PY" -m pip install \
     'numpy==1.26.4' 'peft==0.7.1' 'huggingface-hub==0.25.2' \
-    'bitsandbytes==0.43.1' \
+    'bitsandbytes==0.43.1' 'protobuf>=3.20.3,<5' \
     'git+https://github.com/haotian-liu/LLaVA.git'
 "$PY" -m pip check
-"$PY" -c 'import torch, transformers, llava; from llava.model.builder import load_pretrained_model; print("Import OK:", torch.__version__, transformers.__version__)'
+"$PY" -c 'import torch, transformers, llava; from llava.model.builder import load_pretrained_model; from transformers.convert_slow_tokenizer import import_protobuf; import_protobuf(); print("Import OK:", torch.__version__, transformers.__version__)'
 "$PY" -m pip freeze > "$CONNECT_DIR/pathgen-environment.txt"
 printf '\nPathGen Python: %s\n' "$PY"
 printf 'Next: "%s" "%s/download_pathgen.py" --model-dir /projects/bfqi/jkim75/models/PathGen-LLaVA\n' "$PY" "$CONNECT_DIR"
