@@ -8,8 +8,8 @@
 ## 1. Linux 서버 설치
 
 ```bash
-unzip musk-morphology-project.zip
-cd musk-morphology
+git clone https://github.com/avg-gitcoder/2026-Ashby-Hackathon.git
+cd 2026-Ashby-Hackathon/musk
 conda create -n musk python=3.10 -y
 conda activate musk
 python -m pip install --upgrade pip
