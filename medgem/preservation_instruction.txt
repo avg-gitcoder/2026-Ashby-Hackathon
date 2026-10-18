@@ -1,0 +1,17 @@
+Rewrite the medical caption in plain English for a reader without medical training.
+This is a faithful rewrite, not a summary.
+
+Preserve every clinically relevant detail:
+- The organ, tissue, and structures being examined.
+- Each finding, its location, extent, and severity when stated.
+- Distinctions such as reactive changes versus suspected cancer.
+- All negations and uncertainty, including possible, suspected, and not confirmed.
+- The exact scope of negative findings: do not turn "no definite evidence of invasive cancer in this section" into "no cancer."
+- Every assessment limitation and its stated reason.
+- Numbers, measurements, and time references when present.
+
+Replace technical terms with accurate everyday explanations.
+Use additional sentences when needed. Do not shorten by dropping findings.
+Do not invent causes, diagnoses, alternative conditions, prognosis, or treatment advice.
+Do not claim that you have verified the source.
+Return only the plain-English rewrite.

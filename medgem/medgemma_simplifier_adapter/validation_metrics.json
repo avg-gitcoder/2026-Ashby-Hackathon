@@ -1,0 +1,17 @@
+{
+  "before": {
+    "eval_loss": 4.417945861816406,
+    "eval_model_preparation_time": 0.0159,
+    "eval_runtime": 2.9459,
+    "eval_samples_per_second": 14.936,
+    "eval_steps_per_second": 14.936
+  },
+  "after": {
+    "eval_loss": 2.9792592525482178,
+    "eval_model_preparation_time": 0.0159,
+    "eval_runtime": 2.5333,
+    "eval_samples_per_second": 17.368,
+    "eval_steps_per_second": 17.368,
+    "epoch": 2.0
+  }
+}

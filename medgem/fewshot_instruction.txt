@@ -1,0 +1,63 @@
+Explain the following pathology caption to an early medical student
+with basic biology knowledge but limited histology and pathology training.
+
+This is an educational explanation, not a summary or a new diagnosis.
+
+Rules:
+- Preserve all findings, anatomical locations, extent, severity,
+  measurements, negations, uncertainty, and assessment limitations.
+- Keep essential medical terms and explain their meanings clearly.
+- Distinguish an observed feature from a proposed diagnosis.
+- Do not confuse nuclei with nucleoli, atypia with cancer, or
+  preserved architecture with a confirmed normal diagnosis.
+- Do not add patient-specific facts, causes, alternative diagnoses,
+  prognosis, or treatment advice.
+- Explain vocabulary without inventing findings.
+- Attribute diagnostic interpretations to the caption.
+- The source may be AI-generated; do not imply independent verification.
+- Use enough sentences to retain the information.
+- Output only the educational explanation in English.
+- Examples are separate cases. Do not transfer their findings to a new case.
+
+Example 1
+
+Example input:
+The tissue section shows duct-like structures with atypical epithelial cells displaying pleomorphism and hyperchromatic nuclei, surrounded by a fibrous stroma with inflammatory infiltrate and increased cellularity. The architecture is distorted, suggesting a potential breast carcinoma, possibly ductal carcinoma in situ or invasive ductal carcinoma. Diagnosis requires further clinical and immunohistochemical correlation.
+
+Example output:
+The section contains structures resembling ducts, which are channels lined by epithelial cells. These lining cells show atypia, meaning an appearance that differs from what is expected. Pleomorphism describes variation in the size and shape of cells or their nuclei. Hyperchromatic nuclei stain more darkly than usual. The surrounding stroma, or supporting tissue, is fibrous and contains inflammatory cells. Increased cellularity means that more cells are present. The usual tissue arrangement is disrupted. The caption raises the possibility of breast cancer but does not confirm it. It mentions ductal carcinoma in situ, which remains within the ducts, and invasive ductal carcinoma, which extends into surrounding tissue, without establishing which is present. Clinical information and immunohistochemistry, which uses antibodies to identify proteins in tissue, are needed to clarify the diagnosis.
+
+Example 2
+
+Example input:
+The tissue shows glandular structures with epithelial cells exhibiting high nucleus-to-cytoplasm ratios, cellular atypia, hyperchromatic nuclei, and visible nucleoli, suggesting neoplastic changes. Surrounding fibrous stroma lacks invasive evidence. These features align with a tubular adenoma diagnosis, a precancerous polyp typically found in the rectum.
+
+Example output:
+The tissue contains glands lined by epithelial cells. A high nucleus-to-cytoplasm ratio means that the nucleus occupies a large part of the cell compared with the cytoplasm around it. The cells look atypical, or unusual, and their nuclei stain darkly. Nucleoli, small structures inside the nuclei, are visible. The caption interprets these findings as suggesting neoplastic changes, meaning changes related to an abnormal growth of cells. No evidence of invasion into the surrounding fibrous supporting tissue is described. The caption considers the findings consistent with a tubular adenoma, a gland-forming polyp described as precancerous. Precancerous does not mean invasive cancer is already present. The source describes this type of polyp as typically occurring in the rectum; this general statement does not establish the location of the sample.
+
+Example 3
+
+Example input:
+The colon tissue exhibits columnar epithelial cells with basal nuclei and eosinophilic cytoplasm, uniform nuclei suggesting normal regulation. Mild inflammation indicated by scattered inflammatory cells in the lamina propria. No dysplasia or malignancy observed. Goblet cells present. Overall, morphology is mostly normal with mild inflammation. Further data needed for a definitive diagnosis.
+
+Example output:
+The colon tissue contains columnar epithelial cells, which are tall lining cells. Their nuclei lie near the base of the cells. Their cytoplasm is eosinophilic, meaning that it stains pink with eosin. The nuclei have a uniform appearance; the caption interprets this as suggesting normal regulation rather than directly measuring regulation. Scattered inflammatory cells in the lamina propria, the supporting tissue beneath the lining, indicate mild inflammation. No dysplasia, meaning abnormal changes in the appearance and organization of lining cells, or malignancy is observed in the described tissue. Goblet cells, which produce mucus, are present. Overall, the caption describes mostly normal-looking tissue with mild inflammation, but states that more information is needed for a definite diagnosis.
+
+Example 4
+
+Example input:
+The prostate tissue image shows well-preserved glandular structures with uniform epithelial cells featuring round to oval nuclei and eosinophilic cytoplasm. The stroma includes fibroblasts and collagen, without signs of malignancy like nuclear atypia or perineural invasion. Overall, the tissue appears benign, though further tests are needed for a definitive diagnosis.
+
+Example output:
+The prostate glands retain their usual structure. Their lining cells look similar to one another and have round or oval nuclei with eosinophilic, or pink-staining, cytoplasm. The stroma, the supporting tissue around the glands, contains fibroblasts and collagen. Fibroblasts make components of connective tissue, including collagen. The caption reports no nuclear atypia, or unusual nuclear appearance, and no perineural invasion, meaning cancer involving the tissue around or within a nerve. These observations concern the image described and do not establish that the entire prostate is free of cancer. The tissue appears benign, or noncancerous-looking, but further tests are needed for a definite diagnosis.
+
+Example 5
+
+Example input:
+The renal tissue section displays multiple glomeruli within Bowman's capsules and surrounding tubules with eosinophilic epithelial cells. No obvious pathology such as fibrosis, inflammation, or neoplastic changes are evident in this view. The architecture is preserved with normal interstitial stroma. Further examination might be required to confirm the absence or presence of pathological alterations.
+
+Example output:
+The kidney section contains several glomeruli, small clusters of capillaries involved in filtering blood, enclosed by Bowman's capsules. Nearby tubules are lined by epithelial cells with eosinophilic, or pink-staining, cytoplasm. The tissue arrangement is preserved. The interstitial stroma, the supporting tissue between the kidney structures, is described as normal. In this particular view, the caption reports no obvious fibrosis, meaning scarring, no inflammation, and no neoplastic changes, meaning changes associated with an abnormal growth of cells. These findings apply to the tissue shown, not necessarily the entire kidney. Further examination may be needed to determine whether pathological changes are present.
+
+End of examples.
+Explain only the new caption supplied below.

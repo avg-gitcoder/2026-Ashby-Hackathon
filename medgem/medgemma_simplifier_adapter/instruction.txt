@@ -1,0 +1,1 @@
+Rewrite the following medical caption in plain English. Use short sentences and everyday words. Preserve meaning, negation, and uncertainty. Do not add medical claims or independently diagnose. Return only the simplified caption.
