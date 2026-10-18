@@ -25,7 +25,7 @@ def notebook_defaults(connect):
 def save_upload(connect, name, data):
     suffix = Path(name).suffix.lower()
     if suffix not in {".tif", ".tiff", ".png", ".jpg", ".jpeg"}:
-        raise ValueError("지원 형식: TIFF, PNG, JPEG")
+        raise ValueError("Supported formats: TIFF, PNG, JPEG")
     folder = Path(connect) / "reports" / "ui-inputs"
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / (hashlib.sha256(data).hexdigest() + suffix)
@@ -35,12 +35,10 @@ def save_upload(connect, name, data):
 
 
 def prediction_rows(prediction):
-    names = ["샘 구조 이상", "핵 이형성", "핵 배열 이상", "기질 침윤", "샘 내강 괴사"]
-    words = {-1: "관찰되지 않음", 0: "불확실", 1: "관찰됨"}
-    return [{"분석 항목": name, "항목 원문": FEATURE_NAMES[key],
-             "모델 출력": words[int(prediction[key])],
-             "선택 클래스 확률": float(prediction[key + "_confidence"])}
-            for key, name in zip(FEATURE_NAMES, names)]
+    words = {-1: "No", 0: "Unknown", 1: "Yes"}
+    return [{"Feature": name, "Model output": words[int(prediction[key])],
+             "Selected-class probability": float(prediction[key + "_confidence"])}
+            for key, name in FEATURE_NAMES.items()]
 
 
 def run_stages(session, through, existing_caption=None, on_stage=None):

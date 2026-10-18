@@ -30,15 +30,15 @@ remain running; this is a private Delta UI, not a public hosted website.
 
 1. Select a Delta image filename, or upload TIFF/PNG/JPEG.
 2. Keep the notebook's existing caption only for its matching image; otherwise
-   uncheck **기존 PathGen 캡션 사용**. The runner verifies image content and paths.
-3. Click **분석 실행 / 이어서 실행**. Existing valid stages are reused; missing stages
+   uncheck **Use existing PathGen caption**. The runner verifies image content and paths.
+3. Click **Run / resume analysis**. Existing valid stages are reused; missing stages
    are submitted to Slurm. Queue time is included in the wait.
 4. Review the original PathGen text, MedGemma explanation, five MUSK classifications
    and selected-class probabilities. Download TXT or JSON.
 5. After a failure, fix the dependency/model path and click again, or select an
    individual stage. Preceding successful stages are restored from disk.
 
-The Korean labels are UI labels; model explanation text is shown unchanged.
+All interface labels are in English; model explanation text is shown unchanged.
 Uploaded files remain under `reports/ui-inputs/`. Results share the notebook's
 `reports/staged/` cache. Uploaded copies have different paths from original dataset
 images and therefore do not share their cached captions. Use Delta-file mode to
