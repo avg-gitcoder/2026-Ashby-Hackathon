@@ -1,5 +1,50 @@
 # CSV를 이용한 MUSK 형태학 분류 학습
 
+## Delta에서는 Slurm으로 제출
+
+로그인 노드(dt-login01 등)에서 아래의 학습 Python 명령을 직접 실행하지 마세요.
+로그인 노드는 편집·설치·작업 제출에 사용합니다.
+GPU 계산은 `train_delta.sbatch`로 제출하거나 이미 할당받은 계산 노드에서만 실행합니다.
+
+```bash
+# 로그인 노드, 저장소의 musk 폴더에서
+git pull origin main
+accounts
+sinfo -s
+mkdir -p logs
+sbatch train_delta.sbatch
+squeue -u "$USER"
+```
+
+제출 파일은 공식 hackathon submit.sbatch를 참고해 bfqi-delta-gpu 계정,
+gpuA100x4 파티션, GPU 1개, CPU 4개, RAM 32GB, 1시간으로 구성했습니다.
+별도 reservation 옵션은 없습니다. 환경과 계정 접근은 서버에서 확인해야 합니다.
+Slurm이 로그 파일을 먼저 열기 때문에 `mkdir -p logs`는 제출 전에 실행하세요.
+완료 여부는 `sacct -j JOBID --format=JobID,State,ExitCode,Elapsed`로 확인합니다.
+취소는 `scancel JOBID`, 로그 확인은 `tail -f logs/musk-JOBID.out`입니다.
+
+기본 환경은 공식 예제의 `module load pytorch-conda/2.8`입니다.
+이 모듈에 MUSK 추가 의존성이 모두 있다는 보장은 없습니다.
+공식 모델 requirements의 오래된 torch 버전을 이 공유 모듈에 덮어 설치하지 마세요.
+기존에 MUSK 설치를 완료한 전용 환경이 있으면 그 Python의 절대 경로를 지정합니다.
+
+```bash
+export MUSK_PYTHON=/absolute/path/to/musk-env/bin/python
+sbatch --export=ALL train_delta.sbatch
+```
+
+학습 전 작업 내부에서 CUDA와 MUSK import 검사를 실행합니다.
+실패하면 logs/musk-JOBID.err의 오류를 확인하고 환경을 먼저 수정하세요.
+Hugging Face 접근 승인과 로그인도 미리 완료해야 합니다.
+원격 작업 제출 및 환경 동작 검증은 아직 수행하지 않았습니다.
+
+발표자료의 권장 경로는 encoder를 고정해 임베딩을 한 번 추출한 뒤 CPU 작업에서
+작은 분류층을 학습하는 것입니다. 현재 스크립트는 encoder를 고정하지만 임베딩을
+epoch마다 다시 계산하므로 GPU 작업으로 제출합니다. 임베딩 캐싱은 아직 구현하지 않았습니다.
+팀당 GPU 한 개를 사용하고 작업 시간을 짧게 유지하세요.
+
+참고: https://github.com/ncsa/ashby-hackathon-2026/blob/main/submit.sbatch
+
 ## 데이터와 한계
 
 입력 CSV: `data/tum_1000_histology_classification.csv` (이 패키지에 포함).
