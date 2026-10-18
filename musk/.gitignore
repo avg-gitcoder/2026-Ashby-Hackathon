@@ -71,3 +71,8 @@ pretrain/
 runs/
 .venv/
 .env.*
+
+# Private inference and generated report outputs
+predictions/
+reports/
+models/
