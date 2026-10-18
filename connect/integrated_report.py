@@ -3,6 +3,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -50,7 +51,11 @@ def main():
 
     def run(python, script, *values):
         print(f"Running {script}", flush=True)
-        subprocess.run([python, str(scripts/script), *map(str, values)], check=True)
+        env = os.environ.copy()
+        if str(script) == "caption_pathgen.py":
+            env.pop("PYTHONPATH", None)
+            env["PYTHONNOUSERSITE"] = "1"
+        subprocess.run([python, str(scripts/script), *map(str, values)], check=True, env=env)
         if hashlib.sha256(image.read_bytes()).hexdigest() != digest:
             raise RuntimeError("Input image changed; refusing to merge results.")
 

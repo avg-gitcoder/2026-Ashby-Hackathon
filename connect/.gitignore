@@ -6,3 +6,5 @@ __pycache__/
 *.py[cod]
 .env
 .env.*
+.venv-pathgen/
+pathgen-environment.txt

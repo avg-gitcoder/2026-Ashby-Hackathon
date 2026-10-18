@@ -27,6 +27,43 @@ the existing MedGemma scripts' `local_files_only=True` behavior.
 
 ## Prepare PathGen separately
 
+From `connect/` on the Delta login node, the provided installer creates an isolated
+`.venv-pathgen` using the module's Python. It does not use or replace the module's PyTorch.
+It installs upstream LLaVA (whose declared requirements pin torch 2.1.2 and transformers
+4.37.2) and pins older compatible PEFT/HF/NumPy versions. These package combinations must
+still be verified on Delta; the installer stops if dependency or import checks fail.
+
+```bash
+git pull --ff-only origin main
+quota
+bash setup_pathgen.sh
+.venv-pathgen/bin/python download_pathgen.py \
+  --model-dir /projects/bfqi/jkim75/models/PathGen-LLaVA
+```
+
+Downloads are large. Run the download only after installation completes successfully.
+The downloader sets the local vision-tower config, keeps `config.original.json`, and
+records the exact downloaded HF revision. Re-running it uses the HF cache/local metadata.
+No model is loaded for inference on the login node.
+
+Then test ONE caption using Slurm before running the full pipeline:
+
+```bash
+mkdir -p logs reports
+sbatch caption_delta.sbatch \
+  --image /projects/bfqi/shared/datasets/NCT-CRC-HE-100K/data-samples/TUM/TUM-YHTSLLSL.tif \
+  --model /projects/bfqi/jkim75/models/PathGen-LLaVA \
+  --output reports/pathgen_first.json
+```
+
+Inspect `logs/pathgen-JOBID.err` if it fails; on success inspect
+`cat reports/pathgen_first.json`. Use a new output filename for subsequent tests.
+For the integrated job, pass
+`--pathgen-python "$(pwd)/.venv-pathgen/bin/python"` from `connect/`.
+
+The installation script writes `pathgen-environment.txt` (including the installed LLaVA
+Git revision). No remote installation or GPU test has been performed by this chat.
+
 Do not install LLaVA's older dependencies into the working MUSK/MedGemma environment.
 Create a separate environment, following the upstream LLaVA installation instructions:
 
