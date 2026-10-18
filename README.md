@@ -13,4 +13,4 @@ The supplied annotation CSV is included; images and model weights must be access
 
 - [Slurm inference instructions](musk/INFERENCE.md)
 
-- [PathGen–MedGemma–MUSK integrated report](musk/INTEGRATION.md)
+- [PathGen–MedGemma–MUSK integrated report](connect/README.md)

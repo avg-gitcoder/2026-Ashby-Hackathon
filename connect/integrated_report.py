@@ -60,7 +60,7 @@ def main():
         "--output", output/"caption.json")
     run(args.medgemma_python, "simplify_medgemma.py", "--caption-json", output/"caption.json",
         "--base-model", args.medgemma_base, "--output", output/"explanation.json")
-    run(sys.executable, "infer_morphology.py", "--image", image,
+    run(sys.executable, scripts.parent / "musk" / "infer_morphology.py", "--image", image,
         "--checkpoint", checkpoint, "--output", output/"musk.csv")
     record = json.loads((output/"explanation.json").read_text(encoding="utf-8"))
     if record["image_sha256"] != digest or Path(record["image_path"]).resolve() != image:

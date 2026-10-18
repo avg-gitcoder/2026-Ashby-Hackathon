@@ -1,0 +1,8 @@
+logs/
+reports/
+predictions/
+models/
+__pycache__/
+*.py[cod]
+.env
+.env.*

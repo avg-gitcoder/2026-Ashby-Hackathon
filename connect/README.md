@@ -17,8 +17,8 @@ this implementation does not claim to resolve them or verify caption accuracy.
 
 - Existing MedGemma adapter: `../medgem/medgemma_simplifier_adapter`.
 - Existing few-shot prompt: `../medgem/fewshot_instruction.txt` (English explanations).
-- MUSK full checkpoint: your server's `runs/head_slurm_JOBID/best.pt`.
-- New orchestration and Slurm scripts in this folder.
+- MUSK full checkpoint: your server's `../musk/runs/head_slurm_JOBID/best.pt`.
+- New orchestration and Slurm scripts in this connect/ folder; MUSK inference is called from ../musk/infer_morphology.py.
 
 PathGen-1.6M is a dataset. To caption a new image, use **PathGen-LLaVA**, not PathGen-CLIP.
 PathGen-LLaVA weights and a compatible LLaVA environment are NOT included.
@@ -56,16 +56,17 @@ PathGen/LLaVA environment and checkpoint compatibility still need testing on the
 
 ## Submit one-image report
 
-Run from the repository's `musk` directory. Substitute the actual Python executables,
+Run from the repository's `connect` directory. Substitute the actual Python executables,
 training job ID, and local PathGen model directory. Keep the absolute Python path of the
 MedGemma environment where the existing `try_medgemma_fewshot.py` works.
 
 ```bash
 git pull origin main
+# If currently in musk: cd ../connect
 mkdir -p logs
 sbatch report_delta.sbatch \
   --image /projects/bfqi/shared/datasets/NCT-CRC-HE-100K/data-samples/TUM/TUM-YHTSLLSL.tif \
-  --musk-checkpoint runs/head_slurm_TRAIN_JOB_ID/best.pt \
+  --musk-checkpoint ../musk/runs/head_slurm_TRAIN_JOB_ID/best.pt \
   --pathgen-model /projects/bfqi/jkim75/models/PathGen-LLaVA \
   --pathgen-python /absolute/path/to/pathgen-env/bin/python \
   --medgemma-python /absolute/path/to/medgemma-env/bin/python \

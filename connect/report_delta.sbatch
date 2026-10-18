@@ -12,7 +12,11 @@
 #SBATCH --error=logs/report-%j.err
 
 set -euo pipefail
-cd "${SLURM_SUBMIT_DIR:?Submit from the repository musk directory}"
+cd "${SLURM_SUBMIT_DIR:?Submit from the repository connect directory}"
+if [[ ! -f integrated_report.py ]]; then
+    echo "Submit from 2026-Ashby-Hackathon/connect." >&2
+    exit 1
+fi
 if [[ -z "${MUSK_PYTHON:-}" ]]; then
     module load pytorch-conda/2.8
     unset PYTHONNOUSERSITE
