@@ -1,5 +1,32 @@
 # PathGen → MedGemma + MUSK
 
+## One-cell notebook
+
+Open `Run_Pathology_Report.ipynb` in VS Code connected to Delta over SSH, and select a
+remote Python 3.10+ kernel. A local Windows kernel cannot submit Delta Slurm jobs.
+Edit only `IMAGE_FILENAME` and run the cell. It submits one GPU Slurm job, waits quietly,
+and displays only the final simplified explanation followed by five yes/no/unknown values.
+No GPU inference is performed in the notebook kernel itself.
+
+The existing setup must already be installed. Defaults use checkpoint
+`../musk/runs/head_slurm_22984898/best.pt`, PathGen's `.venv-pathgen`, and the known
+MedGemma module Python. The model paths can be changed through `Settings` in the cell.
+Input accepts a basename (e.g. TUM-YHTSLLSL.tif), not an arbitrary filesystem path.
+Images are read from the existing TUM directory.
+
+The cell remains busy while Slurm queues/runs the job; do not run it repeatedly to poll.
+Normal cell interruption requests cancellation of that submitted job.
+The wait limit is four hours including queue time; it requests cancellation on timeout.
+If a kernel is disconnected or killed, Slurm may continue: job IDs are recorded under
+`logs/notebook-JOBID.json` and can be checked using `squeue` / cancelled using `scancel`.
+An error displays a short diagnostic instead of treating a missing report as success.
+
+Each run stores its output in a unique `reports/notebook_...` folder. Full logs are in
+`logs/notebook-JOBID.out` and `.err`. On success the returned `result` variable also contains
+the probabilities, source caption, output directory and Slurm job ID.
+No notebook outputs or model weights are committed. Clear outputs before sharing a used
+notebook. The wrapper has been tested using simulated Slurm responses, not a live cluster.
+
 One image is used for both image models:
 
 ```text
