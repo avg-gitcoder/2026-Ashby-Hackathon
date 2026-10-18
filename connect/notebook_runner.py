@@ -7,6 +7,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 
 def find_connect(start=None):
@@ -22,9 +23,9 @@ def find_connect(start=None):
 class Settings:
     connect: Path
     image_root: Path = Path("/projects/bfqi/shared/datasets/NCT-CRC-HE-100K/data-samples/TUM")
-    checkpoint: Path | None = None
+    checkpoint: Optional[Path] = None
     pathgen_model: Path = Path("/projects/bfqi/jkim75/models/PathGen-LLaVA")
-    pathgen_python: Path | None = None
+    pathgen_python: Optional[Path] = None
     medgemma_python: Path = Path("/sw/rh9.4/user/python/conda-env/pytorch-2.8-cu128/bin/python")
     poll_seconds: float = 10
     timeout_seconds: float = 4 * 60 * 60
